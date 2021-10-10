@@ -1,7 +1,7 @@
 use dotenv::dotenv;
-use std::sync::Arc;
 use std::env;
 use std::net::SocketAddr;
+use std::sync::Arc;
 
 use warp::{self, Filter};
 
@@ -17,21 +17,20 @@ use log4rs::{
 extern crate serde_derive;
 
 use crate::{
-    db::DB,
     cache::Cache,
-    services::{with_service, Service}
+    db::DB,
+    services::{with_service, Service},
 };
 
 mod apis;
-mod db;
 mod cache;
+mod db;
+mod errors;
 mod handlers;
 mod models;
 mod routes;
 mod serde_utils;
 mod services;
-mod errors;
-
 
 /// Crate main.
 /// The main service needs to be async, in order to leverage async services.
@@ -41,19 +40,10 @@ async fn main() {
     // normal std::env methods to access.
     dotenv().ok();
 
-    // Fire up the logger.  Logging to stdout for now.  But this can be
-    // easily changed and managed via log4j configs
-    let stdout: ConsoleAppender = ConsoleAppender::builder()
-        .encoder(Box::new(JsonEncoder::new()))
-        .build();
-    let log_config = log4rs::config::Config::builder()
-        .appender(Appender::builder().build("stdout", Box::new(stdout)))
-        .build(Root::builder().appender("stdout").build(LevelFilter::Debug))
-        .unwrap();
+    // Configure logging.  Update the log4rs.yml file to modify the config.
+    log4rs::init_file("log4rs.yml", Default::default()).unwrap();
 
-    log4rs::init_config(log_config).unwrap();
-
-     let api_address: SocketAddr = env::var("API_ADDRESS")
+    let api_address: SocketAddr = env::var("API_ADDRESS")
         .expect("API_ADDRESS is not set in env")
         .parse()
         .expect("API_ADDRESS is invalid");
@@ -65,8 +55,7 @@ async fn main() {
     let service = Arc::new(Service::new(db_client, cache_client));
 
     // Generate the routes collection.  to extend, just add more `.or(macro)` calls.
-    let routes = grant_options!(Arc::clone(&service))
-        .or(grant_post!(Arc::clone(&service)));
+    let routes = grant_options!(Arc::clone(&service)).or(grant_post!(Arc::clone(&service)));
 
     // Start the service
     warp::serve(routes).run(api_address).await;
