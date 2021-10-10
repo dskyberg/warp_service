@@ -4,6 +4,15 @@ use std::env;
 use std::net::SocketAddr;
 
 use warp::{self, Filter};
+
+use log::{error, info, warn, LevelFilter};
+
+use log4rs::{
+    append::console::ConsoleAppender,
+    config::{Appender, Root},
+    encode::json::JsonEncoder,
+};
+
 #[macro_use]
 extern crate serde_derive;
 
@@ -32,7 +41,19 @@ async fn main() {
     // normal std::env methods to access.
     dotenv().ok();
 
-    let api_address: SocketAddr = env::var("API_ADDRESS")
+    // Fire up the logger.  Logging to stdout for now.  But this can be
+    // easily changed and managed via log4j configs
+    let stdout: ConsoleAppender = ConsoleAppender::builder()
+        .encoder(Box::new(JsonEncoder::new()))
+        .build();
+    let log_config = log4rs::config::Config::builder()
+        .appender(Appender::builder().build("stdout", Box::new(stdout)))
+        .build(Root::builder().appender("stdout").build(LevelFilter::Debug))
+        .unwrap();
+
+    log4rs::init_config(log_config).unwrap();
+
+     let api_address: SocketAddr = env::var("API_ADDRESS")
         .expect("API_ADDRESS is not set in env")
         .parse()
         .expect("API_ADDRESS is invalid");
