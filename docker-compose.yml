@@ -14,20 +14,11 @@ services:
     environment:
     - PUID=1000
     - PGID=1000
+    - MONGO_INITDB_DATABASE=gnap
     volumes:
     - ./data/mongodb/database:/data/db
+    - ./mongodb-init/:/docker-entrypoint-initdb.d/:ro
     ports:
     - 27017:27017
+    - 8111:8111
     restart: unless-stopped
-
-  mongodb-init:
-    image: mongo:5
-    container_name: mongodb-init
-    depends_on:
-      - mongodb
-    volumes:
-      - ./mongodb-init:/mongodb-init
-    links:
-      - mongodb
-    command:
-      mongoimport --host mongodb --db gnap  --drop --jsonArray --file /mongodb-init/grant_options.json

@@ -53,15 +53,7 @@ volume.  Review the [docker-compose.yml](./docker-compose.yml) file for info.
 Personally, I prefer using the Robo3T GUI for directly managing the Mongo instance
 to create the database, and initializing data.
 
-The MongoDB instance can be initialized with the data in [mongodb_init](./mongodb_init/init.json).
-You can initialize the database by running the `mongodb-init` docker service:
-
-````
-> docker-compose up -d mongo-init
-````
-
-**Note: If you don't specifiy a service (either `mongodb` or `mongodb-init`), the `mongodb-init` service will be
-loaded, and wipe any existing data for that collection**
+The MongoDB instance is initialized with the script in [mongodb_init](./mongodb_init/init.js).
 
 Access the monodb shell with:
 
