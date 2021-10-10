@@ -1,6 +1,9 @@
 use redis::aio::ConnectionManager;
 use redis::Client;
+use redis::{RedisWrite, ToRedisArgs};
 use std::env;
+
+use crate::models::request;
 
 #[derive(Clone)]
 pub struct Cache {
@@ -23,5 +26,14 @@ impl Cache {
             client,
             connection_manager,
         }
+    }
+}
+
+impl ToRedisArgs for &request::GrantOptions {
+    fn write_redis_args<W>(&self, out: &mut W)
+    where
+        W: ?Sized + RedisWrite,
+    {
+        out.write_arg_fmt(serde_json::to_string(self).expect("Can't serialize GrantOptions as string"))
     }
 }

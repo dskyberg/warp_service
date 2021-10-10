@@ -6,7 +6,7 @@ use crate::models::request::{GrantRequest, GrantOptions};
 pub async fn grant_options(service: Arc<Service>) -> Result<impl warp::Reply, warp::Rejection> {
 
     //let options = GrantOptions::new();
-    let options:GrantOptions = service.get_grant_options().await;
+    let options:GrantOptions = service.get_grant_options().await?;
     Ok(warp::reply::json(&options))
 }
 
