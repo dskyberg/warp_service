@@ -1,16 +1,20 @@
-use crate::db::DB;
 use std::sync::Arc;
 use warp::Filter;
-use crate::models::request::GrantOptions;
+use crate::{
+    db::DB,
+    cache::Cache,
+    models::request::GrantOptions
+};
 
 #[derive(Clone)]
 pub struct Service {
     pub db_client: DB,
+    pub cache_client: Cache
 }
 
 impl Service {
-    pub fn new(db_client: DB) -> Self {
-        Service { db_client }
+    pub fn new(db_client: DB, cache_client: Cache) -> Self {
+        Service { db_client, cache_client}
     }
 
     pub async fn get_dbs(&self) -> Vec<String> {

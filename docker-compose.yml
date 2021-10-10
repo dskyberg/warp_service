@@ -1,8 +1,16 @@
 version: "3.8"
 services:
+  redis:
+    image: redis:alpine
+    container_name: redis
+    ports:
+      - 6379:6379
+
   mongodb:
-    image : mongo
+    image : mongo:5
     container_name: mongodb
+    depends_on:
+      - redis
     environment:
     - PUID=1000
     - PGID=1000
@@ -11,3 +19,15 @@ services:
     ports:
     - 27017:27017
     restart: unless-stopped
+
+  mongodb-init:
+    image: mongo:5
+    container_name: mongodb-init
+    depends_on:
+      - mongodb
+    volumes:
+      - ./mongodb-init:/mongodb-init
+    links:
+      - mongodb
+    command:
+      mongoimport --host mongodb --db gnap  --drop --jsonArray --file /mongodb-init/grant_options.json

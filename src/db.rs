@@ -15,7 +15,7 @@ use std::env;
 #[derive(Clone, Debug)]
 pub struct DB {
     pub client: Client,
-    pub db: Database,
+    pub db: Database
 }
 
 //const MONGO_URI: &str = "mongodb://127.0.0.1:27017";
@@ -38,7 +38,7 @@ impl DB {
         let d = client.database(&database);
         DB {
             client: client,
-            db: d,
+            db: d
         }
     }
 

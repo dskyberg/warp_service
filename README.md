@@ -41,18 +41,30 @@ This service leverages MongoDB, using the new 100% Rust mongodb crate. Connectio
 pooling is built into the crate.  So, no need to fool with `r2d2` any more.
 
 ### Launch MongoDB
+
 To launch mongo via docker, run:
 
 ````
-:> docker-compose up -d
+> docker-compose up -d mongodb
 ````
+
 This will create and run the mongo container, and link a local folder as a
 volume.  Review the [docker-compose.yml](./docker-compose.yml) file for info.
 Personally, I prefer using the Robo3T GUI for directly managing the Mongo instance
 to create the database, and initializing data.
 
+The MongoDB instance can be initialized with the data in [mongodb_init](./mongodb_init/init.json).
+You can initialize the database by running the `mongodb-init` docker service:
 
-Access the monodb shell with
+````
+> docker-compose up -d mongo-init
+````
+
+**Note: If you don't specifiy a service (either `mongodb` or `mongodb-init`), the `mongodb-init` service will be
+loaded, and wipe any existing data for that collection**
+
+Access the monodb shell with:
+
 ````bash
 > docker exec -it mongodb mongo
 ````
@@ -66,6 +78,8 @@ MONGODB_DATABASE=gnap
 MONGODB_USER=me
 MONGODB_PASSWORD=password
 MONGODB_APP_NAME=gnap
+REDIS_URI=redis://localhost
+API_ADDRESS=127.0.0.1:8000
 ````
 
 ## Run
