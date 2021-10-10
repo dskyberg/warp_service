@@ -20,5 +20,4 @@ services:
     - ./mongodb-init/:/docker-entrypoint-initdb.d/:ro
     ports:
     - 27017:27017
-    - 8111:8111
     restart: unless-stopped
